@@ -25,6 +25,11 @@ type service struct {
 	urlDAO *mongo.DAO
 }
 
+// NewService creates a url shortening service. It requires DAO object
+func NewService(urlDAO *mongo.DAO) Service {
+	return &service{urlDAO}
+}
+
 // GenerateShortURL is
 func (s *service) GenerateShortURL(url string) (string, error) {
 	code := base62.StdEncoding.EncodeToString([]byte(url))
@@ -42,9 +47,4 @@ func (s *service) GetOriginalURL(code string) (string, error) {
 		return "", err
 	}
 	return shortURL.URL, nil
-}
-
-// NewService creates a url shortening service. It requires DAO object
-func NewService(urlDAO *mongo.DAO) Service {
-	return &service{urlDAO}
 }
