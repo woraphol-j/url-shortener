@@ -35,11 +35,8 @@ func MakeHandler(service Service, logger kitlog.Logger) http.Handler {
 
 	router := mux.NewRouter()
 
-	// router.Handle("/v1/shorturls", generateShortURLHandler).Methods("POST")
-	// router.Handle("/v1/shorturls/{id}", getOriginalURLHandler).Methods("GET")
 	router.Handle("/shorturls", generateShortURLHandler).Methods("POST")
 	router.Handle("/shorturls/{id}", getOriginalURLHandler).Methods("GET")
-	// router.Handle("/shorturls/dd", getOriginalURLHandler).Methods("GET")
 
 	return router
 }
