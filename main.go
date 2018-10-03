@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/joho/godotenv"
 	"github.com/woraphol-j/url-shortener/pkg/mongo"
 
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
@@ -65,8 +66,14 @@ func main() {
 
 	// var rs routing.Service
 	// rs = routing.NewProxyingMiddleware(ctx, *routingServiceURL)(rs)
-	var urlDAO = mongo.NewDAO()
+	if err := godotenv.Load(); err != nil {
+		panic("Fail to load configuration")
+	}
 
+	mongoURL := os.Getenv("MONGO_URL")
+	mongoDb := os.Getenv("MONGO_DATABASE")
+	mongoColl := os.Getenv("MONGO_COLLECTION")
+	var urlDAO = mongo.NewDAO(mongoURL, mongoDb, mongoColl)
 	var us urlshortener.Service
 	// us = urlshortener.NewService(cargos, locations, handlingEvents, rs)
 	us = urlshortener.NewService(urlDAO)
@@ -91,9 +98,9 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.Handle("/shorturls", urlshortener.MakeHandler(us, httpLogger))
+	mux.Handle("/", urlshortener.MakeHandler(us, httpLogger))
 
-	http.Handle("/", accessControl(mux))
+	// http.Handle("/", accessControl(mux))
 	http.Handle("/metrics", promhttp.Handler())
 
 	errs := make(chan error, 2)

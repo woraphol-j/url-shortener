@@ -22,11 +22,11 @@ type Service interface {
 }
 
 type service struct {
-	urlDAO *mongo.DAO
+	urlDAO mongo.DAO
 }
 
 // NewService creates a url shortening service. It requires DAO object
-func NewService(urlDAO *mongo.DAO) Service {
+func NewService(urlDAO mongo.DAO) Service {
 	return &service{urlDAO}
 }
 
