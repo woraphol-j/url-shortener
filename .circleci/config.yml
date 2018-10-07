@@ -3,7 +3,8 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.11
-      - image: circleci/mongo:4.1.3
+      # - image: circleci/mongo:4.1.3
+      - image: mongo:3.6.8
         # environment:
         #   POSTGRES_USER: circleci-demo-go
         #   POSTGRES_DB: circle_test
