@@ -11,7 +11,7 @@ services:
       - .:/go/src/github.com/woraphol-j/url-shortener
 
   mongo:
-    image: mongo:4.1.3
+    image: mongo:3.6.8
     container_name: mongo
     ports:
       - 27017:27017

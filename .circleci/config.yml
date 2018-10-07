@@ -3,11 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.11
-      # - image: circleci/mongo:4.1.3
       - image: mongo:3.6.8
-        # environment:
-        #   POSTGRES_USER: circleci-demo-go
-        #   POSTGRES_DB: circle_test
 
     working_directory: /go/src/github.com/woraphol-j/url-shortener
 
@@ -22,12 +18,8 @@ jobs:
           keys:
             - v1-pkg-cache
 
-      # Normally, this step would be in a custom primary image;
-      # we've added it here for the sake of explanation.
-      - run: go get github.com/onsi/ginkgo
+      # Install dependencies
       - run: dep ensure
-      - run: ls
-      - run: echo $GOPATH
 
       - run:
           name: Waiting for Mongo to be ready
@@ -39,39 +31,15 @@ jobs:
               sleep 1
             done
             echo Failed waiting for Mongo && exit 1
-      - run: ls /go/bin
       - run:
           name: Run unit and integration tests
-          # environment:
-          #   CONTACTS_DB_URL: "postgres://circleci-demo-go@localhost:5432/circle_test?sslmode=disable"
-          #   CONTACTS_DB_MIGRATIONS: /go/src/github.com/CircleCI-Public/circleci-demo-go/db/migrations
           command: |
-            # trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
-            # make test | tee ${TEST_RESULTS}/go-test.out
-            # TEST_RESULTS=$TEST_RESULTS MONGO_URL=mongodb://localhost:27017 MONGO_DATABASE=url-shortener MONGO_COLLECTION=urls go test ./...
-            TEST_RESULTS=/tmp/test-results/ginkgo/results MONGO_URL=mongodb://localhost:27017 MONGO_DATABASE=url-shortener MONGO_COLLECTION=urls go test ./...
-      # - run: make
-      - run: ls /tmp/test-results/ginkgo
-      # - run: cat /tmp/test-results/ginkgo/results.xml
+            TEST_RESULTS=/tmp/test-results/ginkgo MONGO_URL=mongodb://localhost:27017 MONGO_DATABASE=url-shortener MONGO_COLLECTION=urls go test ./...
 
       - save_cache:
           key: v1-pkg-cache
           paths:
             - "/go/pkg"
-
-      # - run:
-      #     name: Start service
-      #     environment:
-      #       CONTACTS_DB_URL: "postgres://circleci-demo-go@localhost:5432/circle_test?sslmode=disable"
-      #       CONTACTS_DB_MIGRATIONS: /go/src/github.com/CircleCI-Public/circleci-demo-go/db/migrations
-      #     command: ./workdir/contacts
-      #     background: true
-
-      # - run:
-      #     name: Validate service is working
-      #     command: |
-      #       sleep 5
-      #       curl --retry 10 --retry-delay 1 -X POST --header "Content-Type: application/json" -d '{"email":"test@example.com","name":"Test User"}' http://localhost:8080/contacts
 
       - store_artifacts:
           path: /tmp/test-results
