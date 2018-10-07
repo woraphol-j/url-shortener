@@ -1,0 +1,41 @@
+version: "3.6"
+services:
+  url-shortener-service:
+    build: build/dev
+    container_name: url-shortener-service
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      - mongo
+    volumes:
+      - .:/go/src/github.com/woraphol-j/url-shortener
+
+  mongo:
+    image: mongo:4.1.3
+    container_name: mongo
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    image: mongo-express:0.49
+    container_name: mongo-express
+    ports:
+      - 8081:8081
+
+  prometheus:
+    image: prom/prometheus:v2.4.2
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  elk:
+    image: sebp/elk:641
+    container_name: elk
+    ports:
+      - 5601:5601
+      - 9200:9200
+      - 5044:5044
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
