@@ -187,14 +187,6 @@
   revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:4684943366b2b6cdbc194086132d79351d73a0dc02028606456642af92451852"
-  name = "github.com/lytics/base62"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "0ee4de5a5d6d26db3daa72bd80a860ff2332b437"
-
-[[projects]]
   digest = "1:ff5ebae34cfbf047d505ee150de27e60570e8c394b3b8fdbb720ff6ac71985fc"
   name = "github.com/matttproud/golang_protobuf_extensions"
   packages = ["pbutil"]
@@ -389,6 +381,14 @@
   pruneopts = "UT"
   revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
   version = "v1.2.2"
+
+[[projects]]
+  digest = "1:c08f5d8cc28ed4dccb098121d5f1f19f708bf04e3bbd4b772ce6461de6ef1ca2"
+  name = "github.com/teris-io/shortid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6c56cef5189ca1b3d5ef01dc07f4d611dfc0bb33"
+  version = "v1.0"
 
 [[projects]]
   digest = "1:c468422f334a6b46a19448ad59aaffdfc0a36b08fdcc1c749a0b29b6453d7e59"
@@ -596,13 +596,14 @@
     "github.com/golang/mock/gomock",
     "github.com/gorilla/mux",
     "github.com/joho/godotenv",
-    "github.com/lytics/base62",
     "github.com/mongodb/mongo-go-driver/bson",
     "github.com/mongodb/mongo-go-driver/mongo",
     "github.com/onsi/ginkgo",
+    "github.com/onsi/ginkgo/reporters",
     "github.com/onsi/gomega",
     "github.com/prometheus/client_golang/prometheus",
     "github.com/prometheus/client_golang/prometheus/promhttp",
+    "github.com/teris-io/shortid",
     "gopkg.in/gavv/httpexpect.v1",
   ]
   solver-name = "gps-cdcl"

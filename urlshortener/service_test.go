@@ -1,35 +1,54 @@
 package urlshortener
 
 import (
+	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
+	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
-	"github.com/woraphol-j/url-shortener/mocks"
+	cg "github.com/woraphol-j/url-shortener/pkg/codegenerator"
+	"github.com/woraphol-j/url-shortener/pkg/mongo"
 )
 
 func TestService(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Test Service Suite")
+	testResult := os.Getenv("TEST_RESULTS")
+	if testResult != "" {
+		junitReporter := reporters.NewJUnitReporter(testResult)
+		RunSpecsWithDefaultAndCustomReporters(
+			t,
+			"Test Service Suite",
+			[]Reporter{junitReporter},
+		)
+	} else {
+		RunSpecs(t, "Test Service Suite")
+	}
 }
 
 var _ = Describe("Service", func() {
 	const (
 		code        = "abcde"
-		originalURL = "www.goggle.com"
+		originalURL = "http://www.google.com"
 	)
 
 	var (
-		mockCtrl *gomock.Controller
-		mockDAO  *mocks.MockDAO
-		service  Service
+		mockCtrl          *gomock.Controller
+		mockDAO           *mongo.MockDAO
+		mockCodeGenerator *cg.MockCodeGenerator
+		service           Service
+		data              *mongo.ShortURL = &mongo.ShortURL{
+			Code: code,
+			URL:  originalURL,
+		}
 	)
 
 	BeforeEach(func() {
 		mockCtrl = gomock.NewController(GinkgoT())
-		mockDAO = mocks.NewMockDAO(mockCtrl)
-		service = NewService(mockDAO)
+		mockDAO = mongo.NewMockDAO(mockCtrl)
+		mockCodeGenerator = cg.NewMockCodeGenerator(mockCtrl)
+		service = NewService(mockDAO, mockCodeGenerator)
 	})
 
 	AfterEach(func() {
@@ -37,13 +56,14 @@ var _ = Describe("Service", func() {
 	})
 
 	It("should save new short url entry correctly", func() {
-		mockDAO.EXPECT().Save("").Return(nil).Times(1)
+		mockCodeGenerator.EXPECT().Generate().Return(code, nil).Times(1)
+		mockDAO.EXPECT().Save(data).Return(nil).Times(1)
 		_, err := service.GenerateShortURL(originalURL)
 		Expect(err).ShouldNot(HaveOccurred())
 	})
 
 	It("should retrieve existing short url entry correctly", func() {
-		mockDAO.EXPECT().Get(code).Return(originalURL).Times(1)
+		mockDAO.EXPECT().Get(code).Return(data, nil).Times(1)
 		_, err := service.GetOriginalURL(code)
 		Expect(err).ShouldNot(HaveOccurred())
 	})

@@ -2,15 +2,13 @@ package urlshortener
 
 import (
 	"context"
+	"os"
 
 	"github.com/go-kit/kit/endpoint"
 )
 
 type generateShortURLRequest struct {
 	URL string
-	// Origin          location.UNLocode
-	// Destination     location.UNLocode
-	// ArrivalDeadline time.Time
 }
 
 type generateShortURLResponse struct {
@@ -23,9 +21,10 @@ func (r generateShortURLResponse) error() error { return r.Err }
 func makeGenerateShortURLEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(generateShortURLRequest)
-		shortURL, err := s.GenerateShortURL(req.URL)
+		baseURL := os.Getenv("BASE_URL")
+		shortURLCode, err := s.GenerateShortURL(req.URL)
 		return generateShortURLResponse{
-			ShortURL: shortURL,
+			ShortURL: baseURL + "/" + shortURLCode,
 			Err:      err,
 		}, nil
 	}
@@ -36,7 +35,7 @@ type getOriginalURLRequest struct {
 }
 
 type getOriginalURLResponse struct {
-	OriginalURL string `json:"cargo,omitempty"`
+	OriginalURL string `json:"originalUrl,omitempty"`
 	Err         error  `json:"error,omitempty"`
 }
 

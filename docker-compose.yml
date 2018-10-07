@@ -15,48 +15,20 @@ services:
     container_name: mongo
     ports:
       - 27017:27017
-    # links:
-    #   - cadvisor:cadvisor
-    #   - alertmanager:alertmanager
-    # depends_on:
-    #   - cadvisor
-    # networks:
-    #   - back-tier
-    # restart: always
+
   mongo-express:
     image: mongo-express:0.49
     container_name: mongo-express
     ports:
       - 8081:8081
-    # environment:
-      # ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-      # ME_CONFIG_MONGODB_ADMINPASSWORD: admin
-
 
   prometheus:
     image: prom/prometheus:v2.4.2
     container_name: prometheus
-    # volumes:
-    #   - ./prometheus/:/etc/prometheus/
-    #   - prometheus_data:/prometheus
-    # command:
-    #   - '--config.file=/etc/prometheus/prometheus.yml'
-    #   - '--storage.tsdb.path=/prometheus'
-    #   - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-    #   - '--web.console.templates=/usr/share/prometheus/consoles'
     ports:
       - 9090:9090
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-
-    # links:
-    #   - cadvisor:cadvisor
-    #   - alertmanager:alertmanager
-    # depends_on:
-    #   - cadvisor
-    # networks:
-    #   - back-tier
-    # restart: always
 
   elk:
     image: sebp/elk:641

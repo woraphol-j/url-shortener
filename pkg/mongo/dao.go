@@ -1,50 +1,49 @@
 package mongo
 
-//go:generate mockgen -destination=../../mocks/mock_dao.go -package=mocks github.com/woraphol-j/url-shortener/pkg/mongo DAO
+//go:generate mockgen -destination=./dao_mock.go -package=mongo github.com/woraphol-j/url-shortener/pkg/mongo DAO
 
 import (
 	"context"
 	"log"
+	"strings"
 
 	"github.com/mongodb/mongo-go-driver/bson"
-
 	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
-// DAO is the data access object
+// DAO is the data access object interface used to access
+// underlying data source
 type DAO interface {
 	Save(shortURL *ShortURL) error
 	Get(code string) (*ShortURL, error)
+	Truncate() (int64, error)
 }
 
 // DAO is the data access object
 type dao struct {
-	mongoClient   *mongo.Client
 	urlCollection *mongo.Collection
 }
 
-// ShortURL is the model to insert and get data from the database
+// ShortURL is the model to insert and get url data from the database
 type ShortURL struct {
-	Code string `bson:"code"`
-	URL  string `bson:"url"`
+	Code     string `bson:"code"`
+	URL      string `bson:"url"`
+	NotFound bool
 }
 
 // NewDAO creates a data access object for managing shortend urls
 func NewDAO(mongoURL, database, collection string) DAO {
-	// client, err := mongo.NewClient("mongodb://mongo:27017")
 	client, err := mongo.NewClient(mongoURL)
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = client.Connect(context.TODO())
+	err = client.Connect(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// coll := client.Database("url-shortener").Collection("urls")
 	coll := client.Database(database).Collection(collection)
 	return &dao{
-		mongoClient:   client,
 		urlCollection: coll,
 	}
 }
@@ -64,14 +63,35 @@ func (dao *dao) Save(shortURL *ShortURL) error {
 	return nil
 }
 
-// Get fetch url by code
+// Get fetchs url by code
 func (dao *dao) Get(code string) (*ShortURL, error) {
-	result := dao.urlCollection.FindOne(
-		context.Background(),
+	docResult := dao.urlCollection.FindOne(
+		nil,
 		bson.NewDocument(bson.EC.String("code", code)),
 	)
 	var shortURL ShortURL
-	result.Decode(&shortURL)
+	err := docResult.Decode(&shortURL)
+	if err != nil {
+		//TODO: Find a better way to check the error type
+		if strings.Contains(err.Error(), mongo.ErrNoDocuments.Error()) {
+			return &ShortURL{
+				NotFound: true,
+			}, nil
+		}
+		return nil, err
+	}
 
 	return &shortURL, nil
+}
+
+// Truncate deletes the entire data in URL collection
+func (dao *dao) Truncate() (int64, error) {
+	result, err := dao.urlCollection.DeleteMany(
+		context.Background(),
+		bson.NewDocument(),
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.DeletedCount, nil
 }

@@ -1,11 +1,9 @@
-// Package urlshortener provides the use-case of booking a cargo. Used by views
-// facing an administrator.
 package urlshortener
 
 import (
 	"errors"
 
-	"github.com/lytics/base62"
+	cg "github.com/woraphol-j/url-shortener/pkg/codegenerator"
 	"github.com/woraphol-j/url-shortener/pkg/mongo"
 )
 
@@ -22,17 +20,25 @@ type Service interface {
 }
 
 type service struct {
-	urlDAO mongo.DAO
+	urlDAO        mongo.DAO
+	codeGenerator cg.CodeGenerator
 }
 
-// NewService creates a url shortening service. It requires DAO object
-func NewService(urlDAO mongo.DAO) Service {
-	return &service{urlDAO}
+// NewService creates a url shortening service.
+// It requires DAO object and the code generator.
+func NewService(urlDAO mongo.DAO, codeGenerator cg.CodeGenerator) Service {
+	return &service{
+		urlDAO,
+		codeGenerator,
+	}
 }
 
 // GenerateShortURL is
 func (s *service) GenerateShortURL(url string) (string, error) {
-	code := base62.StdEncoding.EncodeToString([]byte(url))
+	code, err := s.codeGenerator.Generate()
+	if err != nil {
+		return "", err
+	}
 	s.urlDAO.Save(&mongo.ShortURL{
 		Code: code,
 		URL:  url,
@@ -45,6 +51,9 @@ func (s *service) GetOriginalURL(code string) (string, error) {
 	shortURL, err := s.urlDAO.Get(code)
 	if err != nil {
 		return "", err
+	}
+	if shortURL.NotFound {
+		return "", nil
 	}
 	return shortURL.URL, nil
 }

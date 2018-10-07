@@ -1,21 +1,8 @@
-.PHONY: all deps test build benchmark coveralls mockgen
-
-DEP_VERSION=0.4.1
-OS := $(shell uname | tr '[:upper:]' '[:lower:]')
+.PHONY: all prepare deps test generate
 
 prepare:
-	@echo "Installing dep..."
-	@curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-${OS}-amd64 -o ${GOPATH}/bin/dep
-	@chmod a+x ${GOPATH}/bin/dep
-
-	@echo "Installing goconvey"
-	go get github.com/smartystreets/goconvey
-
-	@echo "Installing richgo"
-	go get -u github.com/kyoh86/richgo
-
-	@echo "Installing realize"
-	go get github.com/oxequa/realize
+	@echo "Installing ginkgo"
+	go get github.com/onsi/ginkgo
 
 deps:
 	@echo "Setting up the vendors folder..."
@@ -25,17 +12,11 @@ deps:
 	@dep status
 	@echo ""
 
-serve:
-	@echo "Running bp-message-server"
-	${GOPATH}/bin/realize start --open --server --build --run --no-config
-
-cover:
-	@echo "Running coverage"
-	${GOPATH}/bin/goconvey
-
 test:
 	@echo "Running test"
-	${GOPATH}/bin/richgo test ./... -v
+	docker-compose down
+	docker-compose up -d
+	MONGO_URL=mongodb://localhost:27017 MONGO_DATABASE=url-shortener MONGO_COLLECTION=urls ginkgo -r
 
 # https://blog.codecentric.de/en/2017/08/gomock-tutorial/
 generate:

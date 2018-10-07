@@ -1,7 +1,6 @@
 package urlshortener
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/go-kit/kit/log"
@@ -17,7 +16,6 @@ func NewLoggingService(logger log.Logger, service Service) Service {
 	return &loggingService{logger, service}
 }
 
-// GenerateShortURL is
 func (s *loggingService) GenerateShortURL(url string) (shortURL string, err error) {
 	defer func(begin time.Time) {
 		s.logger.Log(
@@ -27,11 +25,9 @@ func (s *loggingService) GenerateShortURL(url string) (shortURL string, err erro
 			"err", err,
 		)
 	}(time.Now())
-	fmt.Println("*************xxx")
 	return s.Service.GenerateShortURL(url)
 }
 
-// GetOriginalURL is
 func (s *loggingService) GetOriginalURL(code string) (originalURL string, err error) {
 	defer func(begin time.Time) {
 		s.logger.Log(
