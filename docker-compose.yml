@@ -29,13 +29,3 @@ services:
       - 9090:9090
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-
-  elk:
-    image: sebp/elk:641
-    container_name: elk
-    ports:
-      - 5601:5601
-      - 9200:9200
-      - 5044:5044
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
