@@ -5,7 +5,7 @@
 This project is neatly designed and built to demonstrate the use of Golang and its ecosystem for building a simple yet functional URL Shortener service.
 
 ### Design decision
-- Instead of building things from scratch, I adopt go-kit which is a microservice framework that facilitates implementing microservice with various aspects such as logging or instrumentation being already provided. Besides, Go-kit enforces good convention that make the code
+- Instead of building things from scratch, I adopt go-kit which is a microservice framework that facilitates implementing microservice with various aspects such as logging or instrumentation being already provided. Besides, Go-kit enforces a solid convention that makes the code consistent and highly testable. The rest of the code follows this same convention even if they are not part of gokit components.
 - It uses go-fmt for linting and formating.
 - Even though Go claims it has a fully functional testing framework and some people do not even recommend using any framework other than the built-in one, I still decided to choose ginkgo as the testing framework as among other things it is the BDD framework that I am very familir with from my Node.js background. In addition, I also select `Gomega` for assertion and `gomock` to do mocking.
 - To ensure highest code quality, I also set up the project so that every commit pushed into the repository will be tested in CircleCI. For steps of execution, please have a look.
