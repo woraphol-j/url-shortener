@@ -3,6 +3,7 @@
 prepare:
 	@echo "Installing ginkgo"
 	go get github.com/onsi/ginkgo
+	dep ensure
 
 deps:
 	@echo "Setting up the vendors folder..."
