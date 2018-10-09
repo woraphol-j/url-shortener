@@ -30,7 +30,7 @@ RUN go build -o /bin/url-shortener
 # ==================================================================
 # (5) Build the final image based on executable from build image
 # ==================================================================
-FROM alpine3.8
+FROM alpine:3.8
 COPY --from=builder /bin/url-shortener /bin/url-shortener
 EXPOSE 8080
 CMD ["/bin/url-shortener"]
