@@ -7,8 +7,9 @@ This project is neatly designed and built to demonstrate the use of Golang and i
 ### Design decision
 - Instead of building things from scratch, I adopt go-kit which is a microservice framework that facilitates implementing microservice with various aspects such as logging or instrumentation being already provided. Besides, Go-kit enforces a solid convention that makes the code consistent and highly testable. The rest of the code follows this same convention even if they are not part of gokit components.
 - It uses go-fmt for linting and formating.
-- Even though Go claims it has a fully functional testing framework and some people do not even recommend using any framework other than the built-in one, I still decided to choose ginkgo as the testing framework as among other things it is the BDD framework that I am very familir with from my Node.js background. In addition, I also select `Gomega` for assertion and `gomock` to do mocking.
-- To ensure highest code quality, I also set up the project so that every commit pushed into the repository will be tested in CircleCI. For steps of execution, please have a look.
+- Even though Go claims that it has a fully functional testing framework and some people do not even recommend using any framework other than the built-in one, I still decided to choose ginkgo as the testing framework as among other things it is the BDD framework that I am very familir with from my Node.js background. In addition, I also select `Gomega` for assertion and `gomock` to do mocking.
+- MongoDB is used as the data storage as it supports horizontal scaling natually.
+- In order to ensure highest code quality, I also set up the project so that every commit pushed into the repository will be tested in CircleCI. For steps of execution, please have a look.
 at `./circleci/config.yml`.
 The CI page is here https://circleci.com/gh/woraphol-j/url-shortener/tree/master
 
@@ -50,6 +51,14 @@ Run the following command to execute both unit and integration test:
 make test
 ```
 Note that the integration test needs Mongo to be up and running. which is already provided in the Makefile script.
+
+### Build production image
+Run the following command to execute build an image:
+```bash
+make build
+```
+Note that to keep the image size low, I applied the technique called `docker multistage build` to the Dockerfile.
+
 
 ### Room for improvement
 Due to the time constraint, this project is quickly built to demonstrate the use of Golang and its ecosystem to develop a url shortener service. Although the project is production-ready and fully functional, there are still some parts that can be improved as follows:

@@ -14,10 +14,13 @@ deps:
 	@echo ""
 
 test:
-	@echo "Running test"
+	@echo "Running unit and integration test"
 	docker-compose down
 	docker-compose up -d
 	MONGO_URL=mongodb://localhost:27017 MONGO_DATABASE=url-shortener MONGO_COLLECTION=urls ginkgo -r
+
+build:
+	docker build -t url-shortener-service .
 
 # https://blog.codecentric.de/en/2017/08/gomock-tutorial/
 generate:
