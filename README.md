@@ -51,11 +51,6 @@ make test
 ```
 Note that the integration test needs Mongo to be up and running. which is already provided in the Makefile script.
 
-### CI Integration
-The project is set up so that every commit pushed into the repository will be tested in CircleCI. For steps of execution, please have a look
-at `./circleci/config.yml`.
-The CI page is here
-
 ### Room for improvement
 Due to the time constraint, this project is quickly built to demonstrate the use of Golang and its ecosystem to develop a url shortener service. Although the project is production-ready and fully functional, there are still some parts that can be improved as follows:
 #### 1. Better short url code generation
