@@ -59,7 +59,6 @@ make build
 ```
 Note that to keep the image size low, I applied the technique called `docker multistage build` to the Dockerfile.
 
-
 ### Room for improvement
 Due to the time constraint, this project is quickly built to demonstrate the use of Golang and its ecosystem to develop a url shortener service. Although the project is production-ready and fully functional, there are still some parts that can be improved as follows:
 #### 1. Better short url code generation
