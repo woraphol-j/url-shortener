@@ -21,6 +21,7 @@ func (s *loggingService) GenerateShortURL(url string) (shortURL string, err erro
 		s.logger.Log(
 			"method", "generateShortURL",
 			"url", url,
+			"shortUrl", shortURL,
 			"took", time.Since(begin),
 			"err", err,
 		)
@@ -33,6 +34,7 @@ func (s *loggingService) GetOriginalURL(code string) (originalURL string, err er
 		s.logger.Log(
 			"method", "getOriginalURL",
 			"code", code,
+			"originalUrl", originalURL,
 			"took", time.Since(begin),
 			"err", err,
 		)
