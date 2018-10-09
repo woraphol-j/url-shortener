@@ -34,6 +34,7 @@ browser address bar and enter, or use the returned short url in the following cu
 curl -v http://localhost:8080/T5yrYS3kX
 ```
 Note that the above url is just an example. The one you use must be the one returned in the first step.
+
 6. You can inspect the mongo database by going to the following url
 ```
 http://localhost:8081/
