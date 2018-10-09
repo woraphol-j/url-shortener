@@ -1,4 +1,4 @@
-.PHONY: all prepare deps test generate
+.PHONY: all build prepare deps test generate
 
 prepare:
 	@echo "Installing ginkgo"

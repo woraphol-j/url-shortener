@@ -60,7 +60,6 @@ Due to the time constraint, this project is quickly built to demonstrate the use
   - The service is designed to follow the `XI. Logs` item of 12 factor app guideline in that log should be written to the console and it is up to the deployment to decide where the log should be collected and processed. In the future, I may consider using tools such as firebeat to redirect log from the container to ELK stack, for example.
 
 #### 3. Add more test coverage
-  - Currently there are 2 test files where are `service_test.go` for unit test and `transport_test.go` for integration test. With more time, I would add
-  more test coverage.
+  - Currently there are 2 test files which are `service_test.go` for unit test and `transport_test.go` for integration test. With more time, I would add more test coverage.
 
 
