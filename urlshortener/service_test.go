@@ -58,13 +58,15 @@ var _ = Describe("Service", func() {
 	It("should save new short url entry correctly", func() {
 		mockCodeGenerator.EXPECT().Generate().Return(code, nil).Times(1)
 		mockDAO.EXPECT().Save(data).Return(nil).Times(1)
-		_, err := service.GenerateShortURL(originalURL)
+		shortURL, err := service.GenerateShortURL(originalURL)
+		Expect(shortURL).To(Equal(code))
 		Expect(err).ShouldNot(HaveOccurred())
 	})
 
-	It("should retrieve existing short url entry correctly", func() {
+	It("should retrieve existing url entry correctly", func() {
 		mockDAO.EXPECT().Get(code).Return(data, nil).Times(1)
-		_, err := service.GetOriginalURL(code)
+		originalURL, err := service.GetOriginalURL(code)
+		Expect(originalURL).To(Equal(originalURL))
 		Expect(err).ShouldNot(HaveOccurred())
 	})
 })
