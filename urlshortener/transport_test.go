@@ -53,7 +53,7 @@ var _ = Describe("Transport", func() {
 		tt         GinkgoTestReporter
 		mockCtrl   *gomock.Controller
 		httpExpect *httpexpect.Expect
-		urlDAO     mongo.DAO
+		urlDAO     mongo.Repository
 	)
 
 	BeforeSuite(func() {
@@ -61,7 +61,7 @@ var _ = Describe("Transport", func() {
 		mongoURL := os.Getenv("MONGO_URL")
 		mongoDb := os.Getenv("MONGO_DATABASE")
 		mongoColl := os.Getenv("MONGO_COLLECTION")
-		urlDAO = mongo.NewDAO(mongoURL, mongoDb, mongoColl)
+		urlDAO = mongo.NewMongoRepository(mongoURL, mongoDb, mongoColl)
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockCodeGenerator := cg.NewMockCodeGenerator(mockCtrl)
 		mockCodeGenerator.EXPECT().Generate().Return(code, nil)

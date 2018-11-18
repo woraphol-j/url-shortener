@@ -1,6 +1,4 @@
-package mongo
-
-//go:generate mockgen -destination=./dao_mock.go -package=mongo github.com/woraphol-j/url-shortener/pkg/mongo DAO
+package repository
 
 import (
 	"context"
@@ -11,28 +9,12 @@ import (
 	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
-// DAO is the data access object interface used to access
-// underlying data source
-type DAO interface {
-	Save(shortURL *ShortURL) error
-	Get(code string) (*ShortURL, error)
-	Truncate() (int64, error)
-}
-
-// DAO is the data access object
-type dao struct {
+type mongoRepository struct {
 	urlCollection *mongo.Collection
 }
 
-// ShortURL is the model to insert and get url data from the database
-type ShortURL struct {
-	Code     string `bson:"code"`
-	URL      string `bson:"url"`
-	NotFound bool
-}
-
-// NewDAO creates a data access object for managing shortend urls
-func NewDAO(mongoURL, database, collection string) DAO {
+// NewMongoRepository creates a data access object for managing shortend urls
+func NewMongoRepository(mongoURL, database, collection string) Repository {
 	client, err := mongo.NewClient(mongoURL)
 	if err != nil {
 		log.Fatal(err)
@@ -43,13 +25,13 @@ func NewDAO(mongoURL, database, collection string) DAO {
 	}
 
 	coll := client.Database(database).Collection(collection)
-	return &dao{
+	return &mongoRepository{
 		urlCollection: coll,
 	}
 }
 
 // Save saves url data in MongoDB
-func (dao *dao) Save(shortURL *ShortURL) error {
+func (dao *mongoRepository) Save(shortURL *ShortURL) error {
 	_, err := dao.urlCollection.InsertOne(
 		context.Background(),
 		bson.NewDocument(
@@ -64,7 +46,7 @@ func (dao *dao) Save(shortURL *ShortURL) error {
 }
 
 // Get fetchs url by code
-func (dao *dao) Get(code string) (*ShortURL, error) {
+func (dao *mongoRepository) Get(code string) (*ShortURL, error) {
 	docResult := dao.urlCollection.FindOne(
 		nil,
 		bson.NewDocument(bson.EC.String("code", code)),
@@ -85,7 +67,7 @@ func (dao *dao) Get(code string) (*ShortURL, error) {
 }
 
 // Truncate deletes the entire data in URL collection
-func (dao *dao) Truncate() (int64, error) {
+func (dao *mongoRepository) Truncate() (int64, error) {
 	result, err := dao.urlCollection.DeleteMany(
 		context.Background(),
 		bson.NewDocument(),

@@ -14,13 +14,27 @@ import (
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	cg "github.com/woraphol-j/url-shortener/pkg/codegenerator"
-	"github.com/woraphol-j/url-shortener/pkg/mongo"
+	r "github.com/woraphol-j/url-shortener/pkg/repository"
 	"github.com/woraphol-j/url-shortener/urlshortener"
 )
 
 const (
 	defaultPort = "8080"
 )
+
+func newMongoRepository() r.Repository {
+	mongoURL := os.Getenv("MONGO_URL")
+	mongoDb := os.Getenv("MONGO_DATABASE")
+	mongoColl := os.Getenv("MONGO_COLLECTION")
+	var urlDAO = r.NewMongoRepository(mongoURL, mongoDb, mongoColl)
+	return urlDAO
+}
+
+func newMysqlRepository() r.Repository {
+	mysqlConnStr := os.Getenv("MYSQL_CONNECTION_STRING")
+	var urlDAO = r.NewMySQLRepository(mysqlConnStr)
+	return urlDAO
+}
 
 func main() {
 	if err := godotenv.Load(); err != nil {
@@ -40,12 +54,10 @@ func main() {
 
 	fieldKeys := []string{"method"}
 
-	mongoURL := os.Getenv("MONGO_URL")
-	mongoDb := os.Getenv("MONGO_DATABASE")
-	mongoColl := os.Getenv("MONGO_COLLECTION")
-	var urlDAO = mongo.NewDAO(mongoURL, mongoDb, mongoColl)
+	urlRepo := newMysqlRepository()
+
 	var us urlshortener.Service
-	us = urlshortener.NewService(urlDAO, cg.NewCodeGenerator())
+	us = urlshortener.NewService(urlRepo, cg.NewCodeGenerator())
 	us = urlshortener.NewLoggingService(log.With(logger, "component", "url-shortener"), us)
 	us = urlshortener.NewInstrumentingService(
 		kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
