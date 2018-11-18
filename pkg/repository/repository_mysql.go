@@ -1,8 +1,8 @@
 package repository
 
 import (
+	"fmt"
 	"log"
-	"os"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -15,19 +15,22 @@ type ShortURLModel struct {
 	URL  string `gorm:"type:varchar(100);"`
 }
 
+// TableName sets table name
+func (ShortURLModel) TableName() string {
+	return "short_urls"
+}
+
 type mysqlRepository struct {
 	db *gorm.DB
 }
 
 // NewMySQLRepository creates a data access object for managing shortend urls
 func NewMySQLRepository(mysqlURL string) Repository {
-	connStr := os.Getenv("MYSQL_CONNECTION_STRING")
-	db, err := gorm.Open("mysql", connStr)
-	db.AutoMigrate(&ShortURLModel{})
-
+	db, err := gorm.Open("mysql", mysqlURL)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("error creating database", err)
 	}
+	db.AutoMigrate(&ShortURLModel{})
 
 	return &mysqlRepository{
 		db: db,
@@ -57,6 +60,7 @@ func (mr *mysqlRepository) Get(code string) (*ShortURL, error) {
 
 // Truncate deletes the entire data in URL collection
 func (mr *mysqlRepository) Truncate() (int64, error) {
-	mr.db.Delete(&ShortURLModel{})
+	fmt.Println("*************************Trancate.....")
+	mr.db.Exec("DELETE * FROM short_urls")
 	return 5, nil
 }

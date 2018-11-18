@@ -17,7 +17,7 @@ test:
 	@echo "Running unit and integration test"
 	docker-compose down
 	docker-compose up -d
-	MONGO_URL=mongodb://localhost:27017 MONGO_DATABASE=url-shortener MONGO_COLLECTION=urls ginkgo -r
+	MONGO_URL=mongodb://localhost:27017 MYSQL_CONNECTION_STRING="root:@tcp(localhost:3306)/url-shortener?charset=utf8&parseTime=True&loc=Local" MONGO_DATABASE=url-shortener MONGO_COLLECTION=urls ginkgo -r
 
 build:
 	docker build -t url-shortener-service .
