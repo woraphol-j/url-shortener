@@ -9,7 +9,7 @@ import (
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
 	cg "github.com/woraphol-j/url-shortener/pkg/codegenerator"
-	"github.com/woraphol-j/url-shortener/pkg/mongo"
+	repository "github.com/woraphol-j/url-shortener/pkg/repository"
 )
 
 func TestService(t *testing.T) {
@@ -35,10 +35,10 @@ var _ = Describe("Service", func() {
 
 	var (
 		mockCtrl          *gomock.Controller
-		mockDAO           *mongo.MockDAO
+		mockDAO           *repository.MockRepository
 		mockCodeGenerator *cg.MockCodeGenerator
 		service           Service
-		data              *mongo.ShortURL = &mongo.ShortURL{
+		data              *repository.ShortURL = &repository.ShortURL{
 			Code: code,
 			URL:  originalURL,
 		}
@@ -46,7 +46,7 @@ var _ = Describe("Service", func() {
 
 	BeforeEach(func() {
 		mockCtrl = gomock.NewController(GinkgoT())
-		mockDAO = mongo.NewMockDAO(mockCtrl)
+		mockDAO = repository.NewMockRepository(mockCtrl)
 		mockCodeGenerator = cg.NewMockCodeGenerator(mockCtrl)
 		service = NewService(mockDAO, mockCodeGenerator)
 	})
@@ -63,7 +63,7 @@ var _ = Describe("Service", func() {
 		Expect(err).ShouldNot(HaveOccurred())
 	})
 
-	It("should retrieve existing short url entry correctly", func() {
+	It("should retrieve existing url entry correctly", func() {
 		mockDAO.EXPECT().Get(code).Return(data, nil).Times(1)
 		originalURL, err := service.GetOriginalURL(code)
 		Expect(originalURL).To(Equal(originalURL))

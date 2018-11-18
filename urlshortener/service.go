@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	cg "github.com/woraphol-j/url-shortener/pkg/codegenerator"
-	"github.com/woraphol-j/url-shortener/pkg/mongo"
+	"github.com/woraphol-j/url-shortener/pkg/repository"
 )
 
 // ErrInvalidArgument is returned when one or more arguments are invalid.
@@ -20,13 +20,13 @@ type Service interface {
 }
 
 type service struct {
-	urlDAO        mongo.DAO
+	urlDAO        repository.Repository
 	codeGenerator cg.CodeGenerator
 }
 
 // NewService creates a url shortening service.
 // It requires DAO object and the code generator.
-func NewService(urlDAO mongo.DAO, codeGenerator cg.CodeGenerator) Service {
+func NewService(urlDAO repository.Repository, codeGenerator cg.CodeGenerator) Service {
 	return &service{
 		urlDAO,
 		codeGenerator,
@@ -39,7 +39,7 @@ func (s *service) GenerateShortURL(url string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	s.urlDAO.Save(&mongo.ShortURL{
+	s.urlDAO.Save(&repository.ShortURL{
 		Code: code,
 		URL:  url,
 	})
