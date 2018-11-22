@@ -2,10 +2,10 @@ package repository
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	logger "github.com/sirupsen/logrus"
 )
 
 // ShortURLModel is the model
@@ -28,7 +28,7 @@ type mysqlRepository struct {
 func NewMySQLRepository(mysqlURL string) Repository {
 	db, err := gorm.Open("mysql", mysqlURL)
 	if err != nil {
-		log.Fatal("error creating database", err)
+		logger.Fatal("error creating database", err)
 	}
 	db.AutoMigrate(&ShortURLModel{})
 
@@ -39,6 +39,9 @@ func NewMySQLRepository(mysqlURL string) Repository {
 
 // Save saves url data in MongoDB
 func (mr *mysqlRepository) Save(shortURL *ShortURL) error {
+	logger.WithFields(logger.Fields{
+		"url": shortURL.URL,
+	}).Info("Generate short url")
 	shortURLModel := &ShortURLModel{
 		Code: shortURL.Code,
 		URL:  shortURL.URL,
@@ -49,6 +52,9 @@ func (mr *mysqlRepository) Save(shortURL *ShortURL) error {
 
 // Get fetchs url by code
 func (mr *mysqlRepository) Get(code string) (*ShortURL, error) {
+	logger.WithFields(logger.Fields{
+		"code": code,
+	}).Info("Retrieve short url")
 	shortURLModel := ShortURLModel{}
 	mr.db.Where("code = ?", code).First(&shortURLModel)
 	return &ShortURL{
