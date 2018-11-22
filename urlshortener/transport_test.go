@@ -12,7 +12,7 @@ import (
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
 	cg "github.com/woraphol-j/url-shortener/pkg/codegenerator"
-	"github.com/woraphol-j/url-shortener/pkg/mongo"
+	"github.com/woraphol-j/url-shortener/pkg/repository"
 	httpexpect "gopkg.in/gavv/httpexpect.v1"
 )
 
@@ -41,7 +41,7 @@ func TestTransport(t *testing.T) {
 	}
 }
 
-var _ = Describe("Transport", func() {
+var _ = PDescribe("Transport", func() {
 	const (
 		baseURL         = "http://localhost:8080"
 		code            = "abcde"
@@ -53,15 +53,13 @@ var _ = Describe("Transport", func() {
 		tt         GinkgoTestReporter
 		mockCtrl   *gomock.Controller
 		httpExpect *httpexpect.Expect
-		urlDAO     mongo.DAO
+		urlDAO     repository.Repository
 	)
 
 	BeforeSuite(func() {
 		os.Setenv("BASE_URL", baseURL)
-		mongoURL := os.Getenv("MONGO_URL")
-		mongoDb := os.Getenv("MONGO_DATABASE")
-		mongoColl := os.Getenv("MONGO_COLLECTION")
-		urlDAO = mongo.NewDAO(mongoURL, mongoDb, mongoColl)
+		mysqlConnStr := os.Getenv("MYSQL_CONNECTION_STRING")
+		urlDAO := repository.NewMySQLRepository(mysqlConnStr)
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockCodeGenerator := cg.NewMockCodeGenerator(mockCtrl)
 		mockCodeGenerator.EXPECT().Generate().Return(code, nil)

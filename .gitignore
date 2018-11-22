@@ -18,5 +18,7 @@
 /vendor/
 /Godeps/
 
+/data
+
 
 # End of https://www.gitignore.io/api/go

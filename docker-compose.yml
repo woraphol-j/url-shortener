@@ -6,21 +6,23 @@ services:
     ports:
       - "${APP_PORT}:${APP_PORT}"
     depends_on:
-      - mongo
+      - mysql
     volumes:
       - .:/go/src/github.com/woraphol-j/url-shortener
+    environment:
+      MYSQL_CONNECTION_STRING: "root:@tcp(mysql:3306)/url-shortener?charset=utf8&parseTime=True&loc=Local"
 
-  mongo:
-    image: mongo:3.6.8
-    container_name: mongo
-    ports:
-      - 27017:27017
+  # mongo:
+  #   image: mongo:3.6.8
+  #   container_name: mongo
+  #   ports:
+  #     - 27017:27017
 
-  mongo-express:
-    image: mongo-express:0.49
-    container_name: mongo-express
-    ports:
-      - 8081:8081
+  # mongo-express:
+  #   image: mongo-express:0.49
+  #   container_name: mongo-express
+  #   ports:
+  #     - 8081:8081
 
   prometheus:
     image: prom/prometheus:v2.4.2
@@ -29,3 +31,14 @@ services:
       - 9090:9090
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  mysql:
+    container_name: mysql
+    image: mysql:5.7
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: url-shortener
+    volumes:
+      - ./data/mysql:/var/lib/mysql

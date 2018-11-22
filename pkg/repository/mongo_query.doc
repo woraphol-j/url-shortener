@@ -1,0 +1,69 @@
+
+db.channel.insert({"channelId": 500, "tag": {"วรพล/bank_*&": "bank"}})
+
+db.threads.find()
+
+db.threads.update(
+   {
+		$and: [
+			{ "threadId": { $eq: "111_55559" } },
+			{ "timestamp": { $lt: 2938363596 } },
+		]
+   },
+   {
+       $set: {
+            "threadId": "111_55559",
+            "channelId": "5555555",
+            "lastMessage": {
+                "id": "325708",
+                "type": "text",
+                "text": "Hello, world!",
+                "sender": "1234455"
+            },
+            isRead: true|false,
+            "timestamp": 2938363596
+       }
+   },
+   { upsert: true }
+)
+
+db.threads.update(
+   {
+		$and: [
+			{ "threadId": { $eq: "111_5555" } }
+		]
+   },
+   {
+        "threadId": "111_5555",
+        "channelId": "5555555",
+        "lastMessage": {
+            "id": "325708",
+            "type": "text",
+            "text": "Hello, world!",
+            "sender": "1234455"
+        },
+        isRead: true|false,
+        "timestamp": 1538363596
+   },
+   { upsert: true }
+)
+
+db.threads.update(
+   {
+		$and: [
+			{ "threadId": { $eq: "111_55559" } },
+			{ "timestamp": { $lt: 4038363596 } }
+		]
+   },
+   {
+       $addToSet: {
+            tags: "bank"
+       }
+   }
+)
+
+db.channels.find({channelId: "111" })
+
+db.channels.update( { "channelId": "222" }, { $inc: { "tags.tag1": 1 } }, { upsert: true })
+
+db.threads.find( { channelId: "5555555" }).sort( { timestamp: -1 }).limit(20).explain()
