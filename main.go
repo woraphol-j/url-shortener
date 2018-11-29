@@ -6,13 +6,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
-	"github.com/joho/godotenv"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	logger "github.com/sirupsen/logrus"
 	cg "github.com/woraphol-j/url-shortener/pkg/codegenerator"
 	r "github.com/woraphol-j/url-shortener/pkg/repository"
 	"github.com/woraphol-j/url-shortener/urlshortener"
@@ -31,16 +32,26 @@ func newMongoRepository() r.Repository {
 }
 
 func newMysqlRepository() r.Repository {
-	mysqlConnStr := os.Getenv("MYSQL_CONNECTION_STRING")
-	var urlDAO = r.NewMySQLRepository(mysqlConnStr)
+	mysqlHost := os.Getenv("MYSQL_HOST")
+	mysqlPort, err := strconv.Atoi(os.Getenv("MYSQL_PORT"))
+	if err != nil {
+		logger.Panic("Mysql Port is invalid: ", err)
+	}
+	mysqlDatabase := os.Getenv("MYSQL_DATABASE")
+	mysqlUsername := os.Getenv("MYSQL_USERNAME")
+	mysqlPassword := os.Getenv("MYSQL_PASSWORD")
+	connStr := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
+		mysqlUsername,
+		mysqlPassword,
+		mysqlHost,
+		mysqlPort,
+		mysqlDatabase,
+	)
+	var urlDAO = r.NewMySQLRepository(connStr)
 	return urlDAO
 }
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		panic("Fail to load configuration")
-	}
-
 	var (
 		addr     = os.Getenv("APP_PORT")
 		httpAddr = flag.String("http.addr", ":"+addr, "HTTP listen address")
@@ -81,6 +92,10 @@ func main() {
 	mux.Handle("/", urlshortener.MakeHandler(us, httpLogger))
 	http.Handle("/", accessControl(mux))
 	http.Handle("/metrics", promhttp.Handler())
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
+	})
 
 	errs := make(chan error, 2)
 	go func() {

@@ -1,0 +1,12 @@
+# Use commit hash as a tag
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/url-shortener:$SHORT_SHA', '.']
+  timeout: 500s
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/url-shortener:$SHORT_SHA']
+# - name: 'gcr.io/cloud-builders/kubectl'
+#   args: ['set', 'image', 'deployment/my-deployment', 'my-container=gcr.io/my-project/my-image']
+#   env:
+#   - 'CLOUDSDK_COMPUTE_ZONE=us-east4-b'
+#   - 'CLOUDSDK_CONTAINER_CLUSTER=my-cluster'

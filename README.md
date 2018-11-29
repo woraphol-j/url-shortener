@@ -71,3 +71,4 @@ Due to the time constraint, this project is quickly built to demonstrate the use
   - Currently there are 2 test files which are `service_test.go` for unit test and `transport_test.go` for integration test. With more time, I would add more test coverage.
 
 
+gcloud builds submit --config cloudbuild.yml --substitutions=SHORT_SHA="1.0"

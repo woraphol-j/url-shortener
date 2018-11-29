@@ -10,7 +10,13 @@ services:
     volumes:
       - .:/go/src/github.com/woraphol-j/url-shortener
     environment:
-      MYSQL_CONNECTION_STRING: "root:@tcp(mysql:3306)/url-shortener?charset=utf8&parseTime=True&loc=Local"
+      APP_PORT: 8080
+      BASE_URL: http://localhost:8080
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: url-shortener
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD:
 
   # mongo:
   #   image: mongo:3.6.8
